@@ -1,6 +1,7 @@
 package br.unitins.comics.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import br.unitins.comics.dto.ClienteDTO;
 import br.unitins.comics.dto.ClienteResponseDTO;
@@ -11,6 +12,7 @@ import br.unitins.comics.model.Cliente;
 import br.unitins.comics.model.Usuario;
 import br.unitins.comics.repository.ClienteRepository;
 import br.unitins.comics.repository.EnderecoRepository;
+import br.unitins.comics.repository.QuadrinhoRepository;
 import br.unitins.comics.repository.TelefoneRepository;
 import br.unitins.comics.repository.UsuarioRepository;
 import br.unitins.comics.validation.ValidationException;
@@ -19,6 +21,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
+import br.unitins.comics.dto.QuadrinhoResponseDTO;
+import br.unitins.comics.model.Quadrinho;
 
 @ApplicationScoped
 public class ClienteServiceImpl implements ClienteService {
@@ -29,10 +33,12 @@ public class ClienteServiceImpl implements ClienteService {
     public EnderecoRepository enderecoRepository;
     @Inject
     public TelefoneRepository telefoneRepository;
-     @Inject
+    @Inject
     public UsuarioRepository usuarioRepository;
     @Inject
     public HashService hashService;
+    @Inject
+    public QuadrinhoRepository quadrinhoRepository;
 
 
     @Override
@@ -145,6 +151,41 @@ public class ClienteServiceImpl implements ClienteService {
             return null;
         }
 
+    }
+
+    @Override
+    @Transactional
+    public void adicionarFavorito(Long idCliente, Long idQuadrinho) {
+        Cliente cliente = clienteRepository.findById(idCliente);
+        Quadrinho quadrinho = quadrinhoRepository.findById(idQuadrinho);
+        if (cliente != null && quadrinho != null) {
+            cliente.getFavoritos().add(quadrinho);
+        } else {
+            throw new NotFoundException("Cliente ou Quadrinho não encontrado.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removerFavorito(Long idCliente, Long idQuadrinho) {
+        Cliente cliente = clienteRepository.findById(idCliente);
+        Quadrinho quadrinho = quadrinhoRepository.findById(idQuadrinho);
+        if (cliente != null && quadrinho != null) {
+            cliente.getFavoritos().remove(quadrinho);
+        } else {
+            throw new NotFoundException("Cliente ou Quadrinho não encontrado.");
+        }
+    }
+
+    @Override
+    public List<QuadrinhoResponseDTO> getFavoritos(Long idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente);
+        if (cliente != null) {
+            return cliente.getFavoritos().stream()
+                .map(QuadrinhoResponseDTO::valueOf)
+                .collect(Collectors.toList());
+        }
+        throw new NotFoundException("Cliente não encontrado.");
     }
 
 }

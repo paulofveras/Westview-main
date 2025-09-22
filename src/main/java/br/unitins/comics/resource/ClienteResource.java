@@ -99,5 +99,26 @@ public class ClienteResource {
         return Response.status(Status.NO_CONTENT).build();
     }
 
+        @POST
+    @RolesAllowed({"Funcionario","Cliente"})
+    @Path("/{idCliente}/favoritos/{idQuadrinho}")
+    public Response adicionarFavorito(@PathParam("idCliente") Long idCliente, @PathParam("idQuadrinho") Long idQuadrinho) {
+        clienteService.adicionarFavorito(idCliente, idQuadrinho);
+        return Response.status(Status.NO_CONTENT).build();
+    }
 
+    @DELETE
+    @RolesAllowed({"Funcionario","Cliente"})
+    @Path("/{idCliente}/favoritos/{idQuadrinho}")
+    public Response removerFavorito(@PathParam("idCliente") Long idCliente, @PathParam("idQuadrinho") Long idQuadrinho) {
+        clienteService.removerFavorito(idCliente, idQuadrinho);
+        return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @GET
+    @RolesAllowed({"Funcionario","Cliente"})
+    @Path("/{idCliente}/favoritos")
+    public Response getFavoritos(@PathParam("idCliente") Long idCliente) {
+        return Response.ok(clienteService.getFavoritos(idCliente)).build();
+    }
 }

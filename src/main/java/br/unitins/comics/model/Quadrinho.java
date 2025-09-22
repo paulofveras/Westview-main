@@ -1,7 +1,10 @@
 package br.unitins.comics.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
 @Entity
@@ -17,6 +20,8 @@ public class Quadrinho extends DefaultEntity {
     private Fornecedor fornecedor;
     private String nomeImagem;
     private Integer estoque;
+    @ManyToMany(mappedBy = "favoritos")
+    private List<Cliente> favoritadosPor;
     
     public String getNome() {
         return nome;
@@ -66,9 +71,13 @@ public class Quadrinho extends DefaultEntity {
     public void setEstoque(Integer estoque) {
         this.estoque = estoque;
     }
-
     
+    public List<Cliente> getFavoritadosPor() {
+            return favoritadosPor;
+        }
 
-    
+    public void setFavoritadosPor(List<Cliente> favoritadosPor) {
+        this.favoritadosPor = favoritadosPor;
+    }
 
     }

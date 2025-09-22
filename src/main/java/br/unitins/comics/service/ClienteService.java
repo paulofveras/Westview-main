@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.comics.dto.ClienteDTO;
 import br.unitins.comics.dto.ClienteResponseDTO;
+import br.unitins.comics.dto.QuadrinhoResponseDTO;
 import br.unitins.comics.dto.UpdatePasswordDTO;
 import br.unitins.comics.dto.UpdateUsernameDTO;
 import br.unitins.comics.dto.UsuarioResponseDTO;
@@ -28,5 +29,11 @@ public interface ClienteService {
     public List<ClienteResponseDTO> findByNome(String nome);
 
     public UsuarioResponseDTO login(String username, String senha);
+
+    public void adicionarFavorito(Long idCliente, Long idQuadrinho);
+
+    public void removerFavorito(Long idCliente, Long idQuadrinho);
+
+    public List<QuadrinhoResponseDTO> getFavoritos(Long idCliente);
 
 }

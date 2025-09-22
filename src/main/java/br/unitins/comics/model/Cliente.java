@@ -1,8 +1,12 @@
 package br.unitins.comics.model;
 
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -19,6 +23,12 @@ public class Cliente extends DefaultEntity {
     @OneToOne
     @JoinColumn(name = "id_usuario", unique = true)
     private Usuario usuario;
+
+    @ManyToMany
+    @JoinTable(name = "cliente_favoritos_quadrinho",
+               joinColumns = @JoinColumn(name = "id_cliente"),
+               inverseJoinColumns = @JoinColumn(name = "id_quadrinho"))
+    private List<Quadrinho> favoritos;
    
 
     public Endereco getEndereco() {
@@ -61,5 +71,12 @@ public class Cliente extends DefaultEntity {
         this.usuario = usuario;
     }
 
+        public List<Quadrinho> getFavoritos() {
+        return favoritos;
+    }
+
+    public void setFavoritos(List<Quadrinho> favoritos) {
+        this.favoritos = favoritos;
+    }
 
 }

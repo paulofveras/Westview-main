@@ -36,3 +36,11 @@ insert into quadrinho (nome,descricao,preco,quantPaginas,material,id_fornecedor,
 insert into quadrinho (nome,descricao,preco,quantPaginas,material,id_fornecedor,estoque) values ('X-men','Marvel Comics',50.50,360,2,1,10);
 
 insert into itempedido (preco,quantidade,desconto,id_quadrinho) values (100,1,5,1);
+
+-- Adicionando um favorito para o cliente 'Visao' (id = 2)
+-- O quadrinho é 'Secret Wars' (id = 1)
+INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (1, 1);
+
+-- Adicionando outro favorito para o cliente 'Billy' (id = 3)
+-- O quadrinho é 'X-men' (id = 2)
+INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 2);

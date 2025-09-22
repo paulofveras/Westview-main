@@ -84,5 +84,55 @@ public class ClienteResourceTest {
         .then()
         .statusCode(204);
     }
-    
+
+        @Test
+    @TestSecurity(user = "tester", roles = "Funcionario")
+    public void testAdicionarFavorito() {
+        // O cliente com ID 2 (Visao) e o quadrinho com ID 1 (Secret Wars) já existem
+        // graças ao seu import.sql
+        given()
+            .when()
+            .post("/clientes/2/favoritos/1")
+            .then()
+            .statusCode(204); // 204 No Content indica sucesso
+    }
+
+    @Test
+    @TestSecurity(user = "tester", roles = "Funcionario")
+    public void testGetFavoritos() {
+        // Adicionando um favorito antes de buscar para garantir que a lista não esteja vazia.
+        // Cliente ID 2 (Visao), Quadrinho ID 2 (X-men)
+        given()
+            .when()
+            .post("/clientes/2/favoritos/2")
+            .then()
+            .statusCode(204);
+
+        // Agora, vamos buscar os favoritos do cliente 2
+        given()
+            .when()
+            .get("/clientes/2/favoritos")
+            .then()
+            .statusCode(200)
+            .body("nome", hasItem(is("X-men"))); // Verifica se o nome do quadrinho está na lista
+    }
+
+    @Test
+    @TestSecurity(user = "tester", roles = "Funcionario")
+    public void testRemoverFavorito() {
+        // Primeiro, adiciona um favorito para garantir que ele exista
+        // Cliente ID 3 (Billy), Quadrinho ID 1 (Secret Wars)
+         given()
+            .when()
+            .post("/clientes/3/favoritos/1")
+            .then()
+            .statusCode(204);
+
+        // Agora, remove o favorito que acabamos de adicionar
+        given()
+            .when()
+            .delete("/clientes/3/favoritos/1")
+            .then()
+            .statusCode(204);
+    }
 }
