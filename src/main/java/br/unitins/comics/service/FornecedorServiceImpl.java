@@ -4,7 +4,9 @@ import java.util.List;
 
 import br.unitins.comics.dto.FornecedorDTO;
 import br.unitins.comics.dto.FornecedorResponseDTO;
+import br.unitins.comics.model.Endereco;
 import br.unitins.comics.model.Fornecedor;
+import br.unitins.comics.model.Telefone;
 import br.unitins.comics.repository.EnderecoRepository;
 import br.unitins.comics.repository.FornecedorRepository;
 import br.unitins.comics.repository.TelefoneRepository;
@@ -13,6 +15,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class FornecedorServiceImpl implements FornecedorService {
@@ -27,14 +30,23 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Override
     @Transactional
     public FornecedorResponseDTO create(@Valid FornecedorDTO dto) {
-        validarNomeFornecedor(dto.nome());
+
+        Endereco endereco = new Endereco();
+        endereco.setCep(dto.endereco().cep());
+        endereco.setRua(dto.endereco().rua());
+        endereco.setNumero(dto.endereco().numero());
+
+        Telefone telefone = new Telefone();
+        telefone.setCodigoArea(dto.telefone().codigoArea());
+        telefone.setNumero(dto.telefone().numero());
 
         Fornecedor fornecedor = new Fornecedor();
         fornecedor.setNome(dto.nome());
-        fornecedor.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-        fornecedor.setTelefone(telefoneRepository.findById(dto.id_telefone()));
+        fornecedor.setNomeFantasia(dto.nomeFantasia());
+        fornecedor.setCnpj(dto.cnpj());
         fornecedor.setEmail(dto.email());
-
+        fornecedor.setEndereco(endereco);
+        fornecedor.setTelefone(telefone);
 
         fornecedorRepository.persist(fornecedor);
         return FornecedorResponseDTO.valueOf(fornecedor);
@@ -49,13 +61,28 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Override
     @Transactional
     public void update(Long id, FornecedorDTO dto) {
-        Fornecedor fornecedorBanco =  fornecedorRepository.findById(id);
+        Fornecedor fornecedorBanco = fornecedorRepository.findById(id);
+        if (fornecedorBanco == null) {
+            throw new NotFoundException("Fornecedor não encontrado.");
+        }
         
         fornecedorBanco.setNome(dto.nome());
-        fornecedorBanco.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-        fornecedorBanco.setTelefone(telefoneRepository.findById(dto.id_telefone()));
+        fornecedorBanco.setNomeFantasia(dto.nomeFantasia());
+        fornecedorBanco.setCnpj(dto.cnpj());
         fornecedorBanco.setEmail(dto.email());
 
+        if (dto.endereco() != null) {
+            Endereco endereco = fornecedorBanco.getEndereco();
+            endereco.setCep(dto.endereco().cep());
+            endereco.setRua(dto.endereco().rua());
+            endereco.setNumero(dto.endereco().numero());
+        }
+
+        if (dto.telefone() != null) {
+            Telefone telefone = fornecedorBanco.getTelefone();
+            telefone.setCodigoArea(dto.telefone().codigoArea());
+            telefone.setNumero(dto.telefone().numero());
+        }
     }
 
     @Override

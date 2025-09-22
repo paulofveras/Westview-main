@@ -7,7 +7,9 @@ import br.unitins.comics.dto.FuncionarioResponseDTO;
 import br.unitins.comics.dto.UpdatePasswordDTO;
 import br.unitins.comics.dto.UpdateUsernameDTO;
 import br.unitins.comics.dto.UsuarioResponseDTO;
+import br.unitins.comics.model.Endereco;
 import br.unitins.comics.model.Funcionario;
+import br.unitins.comics.model.Telefone;
 import br.unitins.comics.model.Usuario;
 import br.unitins.comics.repository.EnderecoRepository;
 import br.unitins.comics.repository.FuncionarioRepository;
@@ -41,19 +43,25 @@ public class FuncionarioServiceImpl implements FuncionarioService {
         Usuario usuario = new Usuario();
         usuario.setUsername(dto.username());
         usuario.setSenha(hashService.getHashSenha(dto.senha()));
-
-        // salvando o usuario
         usuarioRepository.persist(usuario);
+        
+        Endereco endereco = new Endereco();
+        endereco.setCep(dto.endereco().cep());
+        endereco.setRua(dto.endereco().rua());
+        endereco.setNumero(dto.endereco().numero());
 
-        validarNomeFuncionario(dto.nome());
+        Telefone telefone = new Telefone();
+        telefone.setCodigoArea(dto.telefone().codigoArea());
+        telefone.setNumero(dto.telefone().numero());
+
         Funcionario funcionario = new Funcionario();
         funcionario.setNome(dto.nome());
+        funcionario.setCpf(dto.cpf());
         funcionario.setCargo(dto.cargo());
-        funcionario.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-        funcionario.setTelefone(telefoneRepository.findById(dto.id_telefone()));
         funcionario.setEmail(dto.email());
         funcionario.setUsuario(usuario);
-
+        funcionario.setEndereco(endereco);
+        funcionario.setTelefone(telefone);
 
         funcionarioRepository.persist(funcionario);
         return FuncionarioResponseDTO.valueOf(funcionario);
@@ -66,16 +74,31 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     }
 
 
-    @Override
+     @Override
     @Transactional
     public void update(Long id, FuncionarioDTO dto) {
-         Funcionario funcionarioBanco =  funcionarioRepository.findById(id);
+        Funcionario funcionarioBanco = funcionarioRepository.findById(id);
+        if (funcionarioBanco == null) {
+            throw new NotFoundException("Funcionário não encontrado.");
+        }
         
         funcionarioBanco.setNome(dto.nome());
-         funcionarioBanco.setCargo(dto.cargo());
-         funcionarioBanco.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-         funcionarioBanco.setTelefone(telefoneRepository.findById(dto.id_telefone()));
-         funcionarioBanco.setEmail(dto.email());
+        funcionarioBanco.setEmail(dto.email());
+        funcionarioBanco.setCpf(dto.cpf());
+        funcionarioBanco.setCargo(dto.cargo());
+
+        if (dto.endereco() != null) {
+            Endereco endereco = funcionarioBanco.getEndereco();
+            endereco.setCep(dto.endereco().cep());
+            endereco.setRua(dto.endereco().rua());
+            endereco.setNumero(dto.endereco().numero());
+        }
+
+        if (dto.telefone() != null) {
+            Telefone telefone = funcionarioBanco.getTelefone();
+            telefone.setCodigoArea(dto.telefone().codigoArea());
+            telefone.setNumero(dto.telefone().numero());
+        }
     }
 
      @Override

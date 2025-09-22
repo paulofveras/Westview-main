@@ -1,25 +1,28 @@
 package br.unitins.comics.model;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Pessoa extends DefaultEntity {
+public abstract class Pessoa extends DefaultEntity {
 
     private String nome;
-    private Sexo sexo;
+    private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_pessoa")
-    private List<Telefone> listaTelefone;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_telefone")
+    private Telefone telefone;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_endereco")
+    private Endereco endereco;
+
+    // Getters e Setters
     public String getNome() {
         return nome;
     }
@@ -28,20 +31,27 @@ public class Pessoa extends DefaultEntity {
         this.nome = nome;
     }
 
-    public Sexo getSexo() {
-        return sexo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setSexo(Sexo sexo) {
-        this.sexo = sexo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public List<Telefone> getListaTelefone() {
-        return listaTelefone;
+    public Telefone getTelefone() {
+        return telefone;
     }
 
-    public void setListaTelefone(List<Telefone> listaTelefone) {
-        this.listaTelefone = listaTelefone;
+    public void setTelefone(Telefone telefone) {
+        this.telefone = telefone;
     }
 
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
 }

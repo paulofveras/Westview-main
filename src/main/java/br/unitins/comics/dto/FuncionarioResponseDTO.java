@@ -5,21 +5,23 @@ import br.unitins.comics.model.Funcionario;
 public record FuncionarioResponseDTO (
     Long id,
     String nome,
+    String email,
+    String cpf,
     String cargo, 
     EnderecoResponseDTO endereco, 
     TelefoneResponseDTO telefone, 
-    String email,
-    String senha,
-    UsuarioResponseDTO usuario) { 
+    UsuarioResponseDTO usuario
+) { 
     public static FuncionarioResponseDTO valueOf(Funcionario funcionario) {
-    return new FuncionarioResponseDTO(
-        funcionario.getId(),
-        funcionario.getNome(),
-        funcionario.getCargo(),
-        EnderecoResponseDTO.valueOf(funcionario.getEndereco()),
-        TelefoneResponseDTO.valueOf(funcionario.getTelefone()),
-        funcionario.getEmail(),
-        funcionario.getUsuario().getSenha(),
-        UsuarioResponseDTO.valueOf(funcionario));
+        return new FuncionarioResponseDTO(
+            funcionario.getId(),
+            funcionario.getNome(),
+            funcionario.getEmail(),
+            funcionario.getCpf(),
+            funcionario.getCargo(),
+            EnderecoResponseDTO.valueOf(funcionario.getEndereco()),
+            TelefoneResponseDTO.valueOf(funcionario.getTelefone()),
+            UsuarioResponseDTO.valueOf(funcionario)
+        );
     }
 }

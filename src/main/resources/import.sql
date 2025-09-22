@@ -1,46 +1,54 @@
-insert into telefone (codigoArea, numero) values ('63','888888888');
-insert into telefone (codigoArea, numero) values ('61','333333333');
-insert into telefone (codigoArea, numero) values ('62','222222222');
-insert into telefone (codigoArea, numero) values ('11','111111111');
-insert into telefone (codigoArea, numero) values ('22','442223344');
-insert into telefone (codigoArea, numero) values ('11','333333333');
-insert into telefone (codigoArea, numero) values ('22','555555555');
-insert into telefone (codigoArea, numero) values ('63','848484848');
+-- 1. Dados independentes (não dependem de outras tabelas)
+INSERT INTO telefone (codigoArea, numero) VALUES ('63','888888888'); -- ID 1
+INSERT INTO telefone (codigoArea, numero) VALUES ('61','333333333'); -- ID 2
+INSERT INTO telefone (codigoArea, numero) VALUES ('62','222222222'); -- ID 3
+INSERT INTO telefone (codigoArea, numero) VALUES ('11','111111111'); -- ID 4
+INSERT INTO telefone (codigoArea, numero) VALUES ('63', '987654321'); -- ID 5
+INSERT INTO telefone (codigoArea, numero) VALUES ('11', '33334444');  -- ID 6
 
-insert into endereco (cep, rua, numero) values (11111111,'Rua 1',12);
-insert into endereco (cep, rua, numero) values (10101010,'Rua 10',2);
-insert into endereco (cep, rua, numero) values (55555555,'Rua 5',14);
-insert into endereco (cep, rua, numero) values (88888888,'Rua Tauá',8);
-insert into endereco (cep, rua, numero) values (25252525,'Rua Fortaleza',3);
-insert into endereco (cep, rua, numero) values (44445555,'Rua Crateús',34);
-insert into endereco (cep, rua, numero) values (66666777,'Rua Cariri',31);
-insert into endereco (cep, rua, numero) values (77777888,'Rua Ipú',20);
+INSERT INTO endereco (cep, rua, numero) VALUES (11111111,'Rua 1',12); -- ID 1
+INSERT INTO endereco (cep, rua, numero) VALUES (10101010,'Rua 10',2); -- ID 2
+INSERT INTO endereco (cep, rua, numero) VALUES (55555555,'Rua 5',14); -- ID 3
+INSERT INTO endereco (cep, rua, numero) VALUES (88888888,'Rua Tauá',8); -- ID 4
+INSERT INTO endereco (cep, rua, numero) VALUES (77777777, 'Avenida dos Quadrinhos', 123); -- ID 5
+INSERT INTO endereco (cep, rua, numero) VALUES (66666666, 'Alameda dos Editores', 456);  -- ID 6
 
+-- 2. Usuários (necessários para Cliente e Funcionário)
+-- Senha para todos é "123"
+INSERT INTO usuario (username, senha) VALUES ('joao123', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA=='); -- ID 1
+INSERT INTO usuario (username, senha) VALUES ('visao', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==');   -- ID 2
+INSERT INTO usuario (username, senha) VALUES ('billy', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==');   -- ID 3
 
+-- 3. Inserindo as Pessoas (base para Cliente, Funcionário, Fornecedor)
+INSERT INTO pessoa (nome, email, id_endereco, id_telefone) VALUES ('João', 'joao@gmail.com', 1, 1);
+INSERT INTO pessoa (nome, email, id_endereco, id_telefone) VALUES ('Visao', 'visao@gmail.com', 2, 2);
+INSERT INTO pessoa (nome, email, id_endereco, id_telefone) VALUES ('Billy', 'billy@gmail.com', 3, 3);
+INSERT INTO pessoa (nome, email, id_endereco, id_telefone) VALUES ('Panini Brasil Ltda', 'panini@gmail.com', 5, 5);
+INSERT INTO pessoa (nome, email, id_endereco, id_telefone) VALUES ('NewJeans Store', 'newjeans@gmail.com', 6, 6);
 
-INSERT INTO usuario (username, senha) VALUES ('joao123', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==');
-INSERT INTO usuario (username, senha) VALUES ('visao', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==');
-INSERT INTO usuario (username, senha) VALUES ('billy', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==');
+-- 4. Inserindo os dados específicos de PessoaFisica
+INSERT INTO pessoafisica (id, cpf) VALUES (1, '11111111111'); -- João
+INSERT INTO pessoafisica (id, cpf) VALUES (2, '22222222222'); -- Visao
+INSERT INTO pessoafisica (id, cpf) VALUES (3, '33333333333'); -- Billy
 
+-- 5. Inserindo os dados específicos de PessoaJuridica
+-- CORREÇÃO APLICADA AQUI: Adicionado o valor para CNPJ.
+INSERT INTO pessoajuridica (id, cnpj, nomefantasia) VALUES (4, '58600111222233', 'Panini Comics'); -- Panini
+INSERT INTO pessoajuridica (id, cnpj, nomefantasia) VALUES (5, '98765432000188', 'NewJeans');     -- NewJeans
 
-insert into funcionario (nome,cargo,id_endereco,id_telefone,email,id_usuario) values ('João','Vendedor',1,1,'joao@gmail.com',1);
+-- 6. Populando as tabelas finais da hierarquia (Cliente, Funcionario, Fornecedor)
+INSERT INTO funcionario (id, cargo, id_usuario) VALUES (1, 'Vendedor', 1);
+INSERT INTO cliente (id, id_usuario) VALUES (2, 2);
+INSERT INTO cliente (id, id_usuario) VALUES (3, 3);
+INSERT INTO fornecedor (id) VALUES (4);
+INSERT INTO fornecedor (id) VALUES (5);
 
-INSERT INTO cliente (nome, id_endereco, id_telefone, email, id_usuario)  VALUES ('Visao', 2, 2, 'visao@gmail.com', 2);
-INSERT INTO cliente (nome, id_endereco, id_telefone, email, id_usuario)  VALUES ('Billy', 7, 7, 'billy@gmail.com', 3);
+-- 7. Quadrinhos
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('Secret Wars','Marvel Comics',40.50,320,1,4,10);
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('X-men','Marvel Comics',50.50,360,2,4,10);
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('Get Up','NewJeans Bunny Beach Bag',150.00,84,4,5,50);
 
-
-insert into fornecedor (nome,id_endereco,id_telefone,email) values ('Panini',6,6,'panini@gmail.com');
-insert into fornecedor (nome,id_endereco,id_telefone,email) values ('NewJeans',7,7,'newjeans@gmail.com');
-
-insert into quadrinho (nome,descricao,preco,quantPaginas,material,id_fornecedor,estoque) values ('Secret Wars','Marvel Comics',40.50,320,1,1,10);
-insert into quadrinho (nome,descricao,preco,quantPaginas,material,id_fornecedor,estoque) values ('X-men','Marvel Comics',50.50,360,2,1,10);
-
-insert into itempedido (preco,quantidade,desconto,id_quadrinho) values (100,1,5,1);
-
--- Adicionando um favorito para o cliente 'Visao' (id = 2)
--- O quadrinho é 'Secret Wars' (id = 1)
-INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (1, 1);
-
--- Adicionando outro favorito para o cliente 'Billy' (id = 3)
--- O quadrinho é 'X-men' (id = 2)
-INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 2);
+-- 8. Favoritos
+INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 1);
+INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (3, 2);
+INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 3);

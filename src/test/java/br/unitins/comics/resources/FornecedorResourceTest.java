@@ -3,8 +3,9 @@ package br.unitins.comics.resources;
 import org.junit.jupiter.api.Test;
 
 import jakarta.ws.rs.core.MediaType;
-
+import br.unitins.comics.dto.EnderecoDTO;
 import br.unitins.comics.dto.FornecedorDTO;
+import br.unitins.comics.dto.TelefoneDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 
@@ -17,26 +18,38 @@ public class FornecedorResourceTest {
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void createTest(){
-        FornecedorDTO dto = new FornecedorDTO("Amazon", 2L, 4L, "jeffbezos@amazon.com");
+        EnderecoDTO endereco = new EnderecoDTO(55555555, "Avenida dos Fornecedores", 500);
+        TelefoneDTO telefone = new TelefoneDTO("11", "955554444");
+
+        FornecedorDTO dto = new FornecedorDTO(
+            "Amazon Livros Ltda",
+            "Amazon", // Nome Fantasia
+            "11222333000144", // CNPJ
+            "jeffbezos@amazon.com",
+            telefone,
+            endereco
+        );
+
         given()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(dto)
-        .when()
-        .post("/fornecedores")
-        .then()
-        .statusCode(201)
-        .body("nome", is("Amazon"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .when()
+            .post("/fornecedores")
+            .then()
+            .statusCode(201)
+            .body("nome", is("Amazon Livros Ltda"))
+            .body("cnpj", is("11222333000144"));
     }
 
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void findByIdTest(){
         given()
-        .when()
-        .get("/fornecedores/1")
-        .then()
-        .statusCode(200)
-        .body("id", is(1));
+            .when()
+            .get("/fornecedores/1") // Panini, conforme import.sql
+            .then()
+            .statusCode(200)
+            .body("id", is(1));
     }
 
     @Test
@@ -53,7 +66,18 @@ public class FornecedorResourceTest {
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void updateTest(){
-        FornecedorDTO dto = new FornecedorDTO("Gisele de Oliveira",7L,7L,"leandra@gmail.com");
+        EnderecoDTO endereco = new EnderecoDTO(55555555, "Avenida dos Fornecedores", 500);
+        TelefoneDTO telefone = new TelefoneDTO("11", "955554444");
+
+        FornecedorDTO dto = new FornecedorDTO(
+            "Amazon Livros Ltda",
+            "Mercado Livre", // Nome Fantasia
+            "11222333000144", // CNPJ
+            "jeffbezos@amazon.com",
+            telefone,
+            endereco
+        );
+
         given()
         .contentType(MediaType.APPLICATION_JSON)
         .body(dto)
@@ -67,12 +91,13 @@ public class FornecedorResourceTest {
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void findAllTest(){
         given()
-        .when()
-        .get("/fornecedores")
-        .then()
-        .statusCode(200)
-        .body("nome", hasItem(is("Panini")));;
+            .when()
+            .get("/fornecedores")
+            .then()
+            .statusCode(200)
+            .body("nome", hasItem(is("Panini")));
     }
+
 
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")

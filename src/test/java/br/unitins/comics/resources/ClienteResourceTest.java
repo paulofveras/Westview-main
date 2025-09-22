@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.MediaType;
 
 import br.unitins.comics.dto.ClienteDTO;
+import br.unitins.comics.dto.EnderecoDTO;
+import br.unitins.comics.dto.TelefoneDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 
@@ -14,29 +16,45 @@ import static org.hamcrest.CoreMatchers.hasItem;
 
 @QuarkusTest
 public class ClienteResourceTest {
-    @Test
+@Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void createTest(){
-        ClienteDTO dto = new ClienteDTO("Janete", 1L, 1l, "janete@email.com", "janete", "123");
+        // Criando os DTOs aninhados primeiro
+        EnderecoDTO endereco = new EnderecoDTO(88888888, "Rua Teste", 100);
+        TelefoneDTO telefone = new TelefoneDTO("63", "988887777");
+        
+        // Criando o ClienteDTO com a nova estrutura
+        ClienteDTO dto = new ClienteDTO(
+            "Janete", 
+            "11122233344", // CPF
+            "janete@email.com", 
+            "janete", 
+            "123", 
+            telefone, 
+            endereco
+        );
+
         given()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(dto)
-        .when()
-        .post("/clientes")
-        .then()
-        .statusCode(201)
-        .body("nome", is("Janete"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .when()
+            .post("/clientes")
+            .then()
+            .statusCode(201)
+            .body("nome", is("Janete"))
+            .body("cpf", is("11122233344"));
     }
+
 
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void findByIdTest(){
         given()
-        .when()
-        .get("/clientes/1")
-        .then()
-        .statusCode(200)
-        .body("id", is(1));
+            .when()
+            .get("/clientes/2") // Visao, conforme import.sql
+            .then()
+            .statusCode(200)
+            .body("id", is(2));
     }
 
     @Test
@@ -53,25 +71,38 @@ public class ClienteResourceTest {
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void updateTest(){
-        ClienteDTO dto = new ClienteDTO("ROBERTO",8L,8L,"teresa@gmail.com","roberto","123");
+        EnderecoDTO endereco = new EnderecoDTO(99999999, "Rua Nova", 50);
+        TelefoneDTO telefone = new TelefoneDTO("11", "911112222");
+
+        ClienteDTO dto = new ClienteDTO(
+            "ROBERTO",
+            "55566677788", // CPF
+            "roberto@gmail.com",
+            "roberto",
+            "123",
+            telefone,
+            endereco
+        );
+
         given()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(dto)
-        .when()
-        .put("/clientes/2")
-        .then()
-        .statusCode(204);
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .when()
+            .put("/clientes/2") // Atualizando o cliente com ID 2 (Visao)
+            .then()
+            .statusCode(204);
     }
+
 
     @Test
     @TestSecurity(user = "tester", roles = "Funcionario")
     public void findAllTest(){
         given()
-        .when()
-        .get("/clientes")
-        .then()
-        .statusCode(200)
-        .body("nome", hasItem(is("Visao")));;
+            .when()
+            .get("/clientes")
+            .then()
+            .statusCode(200)
+            .body("nome", hasItem(is("Visao")));
     }
 
     @Test
@@ -134,5 +165,6 @@ public class ClienteResourceTest {
             .delete("/clientes/3/favoritos/1")
             .then()
             .statusCode(204);
-    }
+        }
 }
+    

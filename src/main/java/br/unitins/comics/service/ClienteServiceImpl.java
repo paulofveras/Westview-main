@@ -9,6 +9,7 @@ import br.unitins.comics.dto.UpdatePasswordDTO;
 import br.unitins.comics.dto.UpdateUsernameDTO;
 import br.unitins.comics.dto.UsuarioResponseDTO;
 import br.unitins.comics.model.Cliente;
+import br.unitins.comics.model.Endereco;
 import br.unitins.comics.model.Usuario;
 import br.unitins.comics.repository.ClienteRepository;
 import br.unitins.comics.repository.EnderecoRepository;
@@ -23,6 +24,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import br.unitins.comics.dto.QuadrinhoResponseDTO;
 import br.unitins.comics.model.Quadrinho;
+import br.unitins.comics.model.Telefone;
 
 @ApplicationScoped
 public class ClienteServiceImpl implements ClienteService {
@@ -41,30 +43,38 @@ public class ClienteServiceImpl implements ClienteService {
     public QuadrinhoRepository quadrinhoRepository;
 
 
-    @Override
-    @Transactional
-    public ClienteResponseDTO create(@Valid ClienteDTO dto) {
-        
-        Usuario usuario = new Usuario();
-        usuario.setUsername(dto.username());
-        usuario.setSenha(hashService.getHashSenha(dto.senha()));
+   @Override
+@Transactional
+public ClienteResponseDTO create(@Valid ClienteDTO dto) {
+    
+    Usuario usuario = new Usuario();
+    usuario.setUsername(dto.username());
+    usuario.setSenha(hashService.getHashSenha(dto.senha()));
 
-        // salvando o usuario
-        usuarioRepository.persist(usuario);
+    usuarioRepository.persist(usuario);
 
-        validarNomeCliente(dto.nome());
+    Endereco endereco = new Endereco();
+    endereco.setCep(dto.endereco().cep());
+    endereco.setRua(dto.endereco().rua());
+    endereco.setNumero(dto.endereco().numero());
+    // O EnderecoRepository não é mais necessário aqui, pois o Endereco será salvo em cascata com o Cliente.
 
-        Cliente cliente = new Cliente();
-        cliente.setNome(dto.nome());
-        cliente.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-        cliente.setTelefone(telefoneRepository.findById(dto.id_telefone()));
-        cliente.setEmail(dto.email());
-        cliente.setUsuario(usuario);
+    Telefone telefone = new Telefone();
+    telefone.setCodigoArea(dto.telefone().codigoArea());
+    telefone.setNumero(dto.telefone().numero());
+    // O TelefoneRepository não é mais necessário aqui.
 
+    Cliente cliente = new Cliente();
+    cliente.setNome(dto.nome());
+    cliente.setCpf(dto.cpf());
+    cliente.setEmail(dto.email());
+    cliente.setUsuario(usuario);
+    cliente.setEndereco(endereco);
+    cliente.setTelefone(telefone);
 
-        clienteRepository.persist(cliente);
-        return ClienteResponseDTO.valueOf(cliente);
-    }
+    clienteRepository.persist(cliente);
+    return ClienteResponseDTO.valueOf(cliente);
+}
 
     public void validarNomeCliente(String nome) {
         Cliente cliente = clienteRepository.findByNomeCompleto(nome);
@@ -72,17 +82,39 @@ public class ClienteServiceImpl implements ClienteService {
             throw  new ValidationException("nome", "O nome '"+nome+"' já existe.");
     }
 
-    @Override
-    @Transactional
-    public void update(Long id, ClienteDTO dto) {
-        Cliente clienteBanco =  clienteRepository.findById(id);
-        
-        clienteBanco.setNome(dto.nome());
-        clienteBanco.setEndereco(enderecoRepository.findById(dto.id_endereco()));
-        clienteBanco.setTelefone(telefoneRepository.findById(dto.id_telefone()));
-        clienteBanco.setEmail(dto.email());
+@Override
+@Transactional
+public void update(Long id, ClienteDTO dto) {
+    // 1. Encontre o cliente existente no banco de dados.
+    Cliente clienteBanco = clienteRepository.findById(id);
 
+    if (clienteBanco == null) {
+        throw new NotFoundException("Cliente não encontrado.");
     }
+    
+    // 2. Atualize os dados da pessoa física.
+    clienteBanco.setNome(dto.nome());
+    clienteBanco.setEmail(dto.email());
+    clienteBanco.setCpf(dto.cpf()); // Adicionado o CPF que agora faz parte do DTO
+
+    // 3. Atualize os dados do endereço diretamente no objeto existente.
+    if (dto.endereco() != null) {
+        Endereco endereco = clienteBanco.getEndereco();
+        endereco.setCep(dto.endereco().cep());
+        endereco.setRua(dto.endereco().rua());
+        endereco.setNumero(dto.endereco().numero());
+    }
+
+    // 4. Atualize os dados do telefone diretamente no objeto existente.
+    if (dto.telefone() != null) {
+        Telefone telefone = clienteBanco.getTelefone();
+        telefone.setCodigoArea(dto.telefone().codigoArea());
+        telefone.setNumero(dto.telefone().numero());
+    }
+    
+    // Não é necessário chamar clienteRepository.persist(clienteBanco);
+    // O Hibernate gerencia a atualização da entidade dentro de uma transação.
+}
 
     @Override
     @Transactional
