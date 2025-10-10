@@ -1,5 +1,6 @@
 package br.unitins.comics.service;
 
+
 import java.util.List;
 
 import br.unitins.comics.dto.FornecedorDTO;
@@ -10,7 +11,9 @@ import br.unitins.comics.model.Telefone;
 import br.unitins.comics.repository.EnderecoRepository;
 import br.unitins.comics.repository.FornecedorRepository;
 import br.unitins.comics.repository.TelefoneRepository;
+import br.unitins.comics.util.PageResult;
 import br.unitins.comics.validation.ValidationException;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -30,6 +33,7 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Override
     @Transactional
     public FornecedorResponseDTO create(@Valid FornecedorDTO dto) {
+        validarNomeFornecedor(dto.nome());
 
         Endereco endereco = new Endereco();
         endereco.setCep(dto.endereco().cep());
@@ -55,7 +59,7 @@ public class FornecedorServiceImpl implements FornecedorService {
     public void validarNomeFornecedor(String nome) {
         Fornecedor fornecedor = fornecedorRepository.findByNomeCompleto(nome);
         if (fornecedor != null)
-            throw  new ValidationException("nome", "O nome '"+nome+"' já existe.");
+            throw new ValidationException("nome", "O nome '" + nome + "' já existe.");
     }
 
     @Override
@@ -65,7 +69,7 @@ public class FornecedorServiceImpl implements FornecedorService {
         if (fornecedorBanco == null) {
             throw new NotFoundException("Fornecedor não encontrado.");
         }
-        
+
         fornecedorBanco.setNome(dto.nome());
         fornecedorBanco.setNomeFantasia(dto.nomeFantasia());
         fornecedorBanco.setCnpj(dto.cnpj());
@@ -93,21 +97,40 @@ public class FornecedorServiceImpl implements FornecedorService {
 
     @Override
     public FornecedorResponseDTO findById(Long id) {
-        return FornecedorResponseDTO.valueOf(fornecedorRepository.findById(id));
+        Fornecedor fornecedor = fornecedorRepository.findById(id);
+        if (fornecedor == null) {
+             throw new NotFoundException("Fornecedor não encontrado.");
+        }
+        return FornecedorResponseDTO.valueOf(fornecedor);
     }
 
     @Override
     public List<FornecedorResponseDTO> findAll() {
-        return fornecedorRepository
-        .listAll()
-        .stream()
-        .map(e -> FornecedorResponseDTO.valueOf(e)).toList();
+        return fornecedorRepository.listAll().stream()
+            .map(FornecedorResponseDTO::valueOf).toList();
     }
 
     @Override
-    public List<FornecedorResponseDTO> findByNome(String nome) {
-        return fornecedorRepository.findByNome(nome).stream()
-        .map(e -> FornecedorResponseDTO.valueOf(e)).toList();
+    public long count() {
+        return fornecedorRepository.count();
     }
 
+    @Override
+    public PageResult<FornecedorResponseDTO> findPaged(String q, int page, int pageSize) {
+        PanacheQuery<Fornecedor> query = fornecedorRepository.findByNome(q);
+        long total = fornecedorRepository.count(); // total geral
+        long filtered = (q == null || q.isBlank()) ? total : query.count();
+
+        var pageData = query.page(page, pageSize).list()
+                .stream().map(FornecedorResponseDTO::valueOf).toList();
+
+        return new PageResult<>(page, pageSize, total, filtered, pageData);
+    }
+
+    @Override
+    public long countFiltered(String q) {
+        return (q == null || q.isBlank())
+                ? fornecedorRepository.count()
+                : fornecedorRepository.findByNome(q).count();
+    }
 }
