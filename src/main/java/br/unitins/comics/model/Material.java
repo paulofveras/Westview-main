@@ -29,8 +29,12 @@ public enum Material {
     }
 
     public static Material valueOf(Integer id) throws IllegalArgumentException {
+        if (id == null) {
+            return null;
+        }
+
         for (Material material : Material.values()) {
-            if (material.id == id)
+            if (material.id.equals(id))
                 return material;
         }
         throw new IllegalArgumentException("id material inválido.");

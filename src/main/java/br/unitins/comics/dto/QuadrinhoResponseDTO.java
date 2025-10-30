@@ -21,7 +21,7 @@ public record QuadrinhoResponseDTO
             quadrinho.getPreco(),
             quadrinho.getQuantPaginas(),
             quadrinho.getMaterial(),
-            FornecedorResponseDTO.valueOf(quadrinho.getFornecedor()),
+            quadrinho.getFornecedor() != null ? FornecedorResponseDTO.valueOf(quadrinho.getFornecedor()) : null,
             quadrinho.getNomeImagem(),
             quadrinho.getEstoque()
             );

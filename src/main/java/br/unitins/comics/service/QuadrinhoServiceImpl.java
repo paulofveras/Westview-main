@@ -35,7 +35,8 @@ public class QuadrinhoServiceImpl implements QuadrinhoService {
         quadrinho.setPreco(dto.preco());
         quadrinho.setQuantPaginas(dto.quantPaginas());
         quadrinho.setMaterial(Material.valueOf(dto.id_material()));
-        quadrinho.setFornecedor(fornecedorRepository.findById(dto.id_fornecedor()));
+        quadrinho.setFornecedor(dto.id_fornecedor() != null ?
+                fornecedorRepository.findById(dto.id_fornecedor()) : null);
         quadrinho.setEstoque(dto.estoque());
         quadrinhoRepository.persist(quadrinho);
         return QuadrinhoResponseDTO.valueOf(quadrinho);
@@ -56,7 +57,8 @@ public class QuadrinhoServiceImpl implements QuadrinhoService {
         quadrinhoBanco.setPreco(dto.preco());
         quadrinhoBanco.setQuantPaginas(dto.quantPaginas());
         quadrinhoBanco.setMaterial(Material.valueOf(dto.id_material()));
-        quadrinhoBanco.setFornecedor(fornecedorRepository.findById(dto.id_fornecedor()));
+        quadrinhoBanco.setFornecedor(dto.id_fornecedor() != null ?
+                fornecedorRepository.findById(dto.id_fornecedor()) : null);
         quadrinhoBanco.setEstoque(dto.estoque());
     }
 
