@@ -9,6 +9,7 @@ import br.unitins.comics.form.ImageForm;
 import br.unitins.comics.service.QuadrinhoFileServiceImpl;
 import br.unitins.comics.service.QuadrinhoService;
 import br.unitins.comics.util.PageResult;
+import br.unitins.comics.validation.ValidationException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -112,8 +113,16 @@ public class QuadrinhoResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response upload(@PathParam("id") Long id, @MultipartForm ImageForm form) {
         LOG.info("Fazendo upload de imagem");
-        fileService.salvar(id, form.getNomeImagem(), form.getImagem());
-        return Response.noContent().build();
+        try {
+            fileService.salvar(id, form.getNomeImagem(), form.getImagem());
+            return Response.noContent().build();
+        } catch (NotFoundException e) {
+            LOG.error("Quadrinho não encontrado para upload de imagem", e);
+            return Response.status(Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (ValidationException e) {
+            LOG.error("Erro de validação ao fazer upload de imagem", e);
+            return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).entity(e.getMessage()).build();
+        }
     }
 
     @GET

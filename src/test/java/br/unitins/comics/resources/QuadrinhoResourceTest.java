@@ -2,6 +2,7 @@ package br.unitins.comics.resources;
 
 import org.junit.jupiter.api.Test;
 
+import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.MediaType;
 
 import br.unitins.comics.dto.QuadrinhoDTO;
@@ -84,6 +85,20 @@ public class QuadrinhoResourceTest {
         .delete("/quadrinhos/{id}")
         .then()
         .statusCode(204);
+    }
+
+        @Test
+    @TestSecurity(user = "tester", roles = "Funcionario")
+    public void uploadNotFoundTest(){
+        given()
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .multiPart("nomeImagem", "fake.png")
+        .multiPart("imagem", "fake.png", "fake".getBytes())
+        .pathParam("id", 9999)
+        .when()
+        .patch("/quadrinhos/{id}/image/upload")
+        .then()
+        .statusCode(Status.NOT_FOUND.getStatusCode());
     }
     
 }
