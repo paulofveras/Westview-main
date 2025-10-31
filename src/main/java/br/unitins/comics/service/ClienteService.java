@@ -8,6 +8,7 @@ import br.unitins.comics.dto.QuadrinhoResponseDTO;
 import br.unitins.comics.dto.UpdatePasswordDTO;
 import br.unitins.comics.dto.UpdateUsernameDTO;
 import br.unitins.comics.dto.UsuarioResponseDTO;
+import br.unitins.comics.util.PageResult;
 import jakarta.validation.Valid;
 
 public interface ClienteService {
@@ -27,6 +28,12 @@ public interface ClienteService {
     public List<ClienteResponseDTO> findAll();
 
     public List<ClienteResponseDTO> findByNome(String nome);
+
+    PageResult<ClienteResponseDTO> findPaged(String q, int page, int pageSize);
+
+    long count();
+
+    long countFiltered(String q);
 
     public UsuarioResponseDTO login(String username, String senha);
 

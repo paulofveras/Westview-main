@@ -16,12 +16,14 @@ import br.unitins.comics.repository.EnderecoRepository;
 import br.unitins.comics.repository.QuadrinhoRepository;
 import br.unitins.comics.repository.TelefoneRepository;
 import br.unitins.comics.repository.UsuarioRepository;
+import br.unitins.comics.util.PageResult;
 import br.unitins.comics.validation.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import br.unitins.comics.dto.QuadrinhoResponseDTO;
 import br.unitins.comics.model.Quadrinho;
 import br.unitins.comics.model.Telefone;
@@ -172,6 +174,31 @@ public void update(Long id, ClienteDTO dto) {
     public List<ClienteResponseDTO> findByNome(String nome) {
         return clienteRepository.findByNome(nome).stream()
         .map(e -> ClienteResponseDTO.valueOf(e)).toList();
+    }
+
+    @Override
+    public PageResult<ClienteResponseDTO> findPaged(String q, int page, int pageSize) {
+        PanacheQuery<Cliente> query = clienteRepository.queryByNome(q);
+        long total = clienteRepository.count();
+        long filtered = (q == null || q.isBlank()) ? total : query.count();
+
+        var pageData = query.page(page, pageSize).list().stream()
+            .map(ClienteResponseDTO::valueOf)
+            .toList();
+
+        return new PageResult<>(page, pageSize, total, filtered, pageData);
+    }
+
+    @Override
+    public long count() {
+        return clienteRepository.count();
+    }
+
+    @Override
+    public long countFiltered(String q) {
+        return (q == null || q.isBlank())
+            ? clienteRepository.count()
+            : clienteRepository.queryByNome(q).count();
     }
 
     public UsuarioResponseDTO login(String username, String senha) {

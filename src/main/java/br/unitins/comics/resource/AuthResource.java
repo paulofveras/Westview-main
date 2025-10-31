@@ -5,6 +5,7 @@ import java.util.Map;
 
 import br.unitins.comics.dto.AuthUsuarioDTO;
 import br.unitins.comics.dto.UsuarioResponseDTO;
+import br.unitins.comics.service.AdministradorService;
 import br.unitins.comics.service.HashService;
 import br.unitins.comics.service.JwtService;
 import br.unitins.comics.service.ClienteService;
@@ -30,6 +31,9 @@ public class AuthResource {
     public ClienteService clienteService;
 
     @Inject
+    public AdministradorService administradorService;
+
+    @Inject
     public HashService hashService;
 
     @Inject
@@ -45,6 +49,8 @@ public class AuthResource {
             usuario = funcionarioService.login(dto.username(), hash);
         } else if (dto.perfil() == 2) { // cliente
             usuario = clienteService.login(dto.username(), hash);
+        } else if (dto.perfil() == 3) { // administrador
+            usuario = administradorService.login(dto.username(), hash);
         } else {
             return Response.status(Status.NOT_FOUND).build();
         }

@@ -21,9 +21,14 @@ public class JwtServiceImpl implements JwtService {
         Instant expiryDate = now.plus(EXPIRATION_TIME);
 
         Set<String> roles = new HashSet<String>();
-        if(authDTO.perfil()==1){
+        if (authDTO.perfil() == 1) {
             roles.add("Funcionario");
-        }else{
+        } else if (authDTO.perfil() == 2) {
+            roles.add("Cliente");
+        } else if (authDTO.perfil() == 3) {
+            roles.add("Administrador");
+            roles.add("Funcionario");
+        } else {
             roles.add("Cliente");
         }
         

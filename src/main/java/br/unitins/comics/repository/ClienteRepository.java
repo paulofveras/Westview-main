@@ -3,11 +3,19 @@ package br.unitins.comics.repository;
 import java.util.List;
 
 import br.unitins.comics.model.Cliente;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ClienteRepository implements PanacheRepository<Cliente> {
+
+    public PanacheQuery<Cliente> queryByNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            return find("ORDER BY nome");
+        }
+        return find("UPPER(nome) LIKE ?1 ORDER BY nome", "%" + nome.toUpperCase() + "%");
+    }
 
     public List<Cliente> findByNome(String nome) {
         return find("UPPER(nome) LIKE ?1", "%"+ nome.toUpperCase() + "%").list();

@@ -4,14 +4,17 @@ package br.unitins.comics.resource;
 import org.jboss.logging.Logger;
 
 import br.unitins.comics.dto.ClienteDTO;
+import br.unitins.comics.dto.ClienteResponseDTO;
 import br.unitins.comics.dto.UpdatePasswordDTO;
 import br.unitins.comics.dto.UpdateUsernameDTO;
 import br.unitins.comics.service.ClienteService;
+import br.unitins.comics.util.PageResult;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -19,6 +22,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -34,7 +38,7 @@ public class ClienteResource {
     private static final Logger LOG = Logger.getLogger(EnderecoResource.class);
 
     @GET
-    @RolesAllowed("Funcionario")
+    @RolesAllowed({"Funcionario","Administrador"})
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         LOG.infof("Executando o metodo findById. Id: %s", id.toString());
@@ -42,14 +46,27 @@ public class ClienteResource {
     }
 
     @GET
-    @RolesAllowed("Funcionario")
+    @RolesAllowed({"Funcionario","Administrador"})
+    public Response findPaged(
+        @QueryParam("q") String q,
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("10") int pageSize
+    ) {
+        LOG.info("Executando o findAll com paginacao");
+        PageResult<ClienteResponseDTO> result = clienteService.findPaged(q, page, pageSize);
+        return Response.ok(result).build();
+    }
+
+    @GET
+    @RolesAllowed({"Funcionario","Administrador"})
+    @Path("/all")
     public Response findAll() {
-        LOG.info("Executando o findAll");
+        LOG.info("Executando o findAll sem paginacao");
         return Response.ok(clienteService.findAll()).build();
     }
 
     @GET
-    @RolesAllowed("Funcionario")
+    @RolesAllowed({"Funcionario","Administrador"})
     @Path("/search/nome/{nome}")
     public Response findByNome(@PathParam("nome") String nome) {
         LOG.info("Executando o metodo findBynome");
@@ -57,14 +74,14 @@ public class ClienteResource {
     }
 
     @POST
-    @RolesAllowed({"Funcionario","Cliente"})
+    @RolesAllowed({"Funcionario","Cliente","Administrador"})
     public Response create(@Valid ClienteDTO dto) {
         LOG.info("Criando um novo cliente");
         return Response.status(Status.CREATED).entity(clienteService.create(dto)).build();
     }
 
     @PUT
-    @RolesAllowed({"Funcionario","Cliente"})
+    @RolesAllowed({"Funcionario","Cliente","Administrador"})
     @Path("/{id}")
     public Response update(@PathParam("id") Long id, ClienteDTO dto) {
         LOG.debugf("DTO Atualizado: %s", dto);
@@ -91,7 +108,7 @@ public class ClienteResource {
     }
 
     @DELETE
-    @RolesAllowed("Funcionario")
+    @RolesAllowed({"Funcionario","Administrador"})
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
         LOG.infof("Deletando cliente. Id: %s", id.toString());
@@ -120,5 +137,14 @@ public class ClienteResource {
     @Path("/{idCliente}/favoritos")
     public Response getFavoritos(@PathParam("idCliente") Long idCliente) {
         return Response.ok(clienteService.getFavoritos(idCliente)).build();
+    }
+
+    @GET
+    @RolesAllowed({"Funcionario","Administrador"})
+    @Path("/count")
+    public long count(@QueryParam("q") String q) {
+        return (q == null || q.isBlank())
+            ? clienteService.count()
+            : clienteService.countFiltered(q);
     }
 }
