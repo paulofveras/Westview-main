@@ -126,7 +126,7 @@ public class QuadrinhoResource {
     }
 
     @GET
-    @RolesAllowed("Funcionario")
+    // @RolesAllowed("Funcionario")
     @Path("/image/download/{nomeImagem}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("nomeImagem") String nomeImagem) {

@@ -44,9 +44,9 @@ INSERT INTO fornecedor (id) VALUES (4);
 INSERT INTO fornecedor (id) VALUES (5);
 
 -- 7. Quadrinhos
-INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('Secret Wars','Marvel Comics',40.50,320,1,4,10);
-INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('X-men','Marvel Comics',50.50,360,2,4,10);
-INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque) VALUES ('Get Up','NewJeans Bunny Beach Bag',150.00,84,4,5,50);
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) VALUES ('Secret Wars','Marvel Comics',40.50,320,1,4,10,'secret-wars.jpg');
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) VALUES ('X-men','Marvel Comics',50.50,360,2,4,10,'x-men.jpg');
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) VALUES ('Get Up','NewJeans Bunny Beach Bag',150.00,84,4,5,50,'get-up.jpg');
 
 -- 8. Favoritos
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 1);
