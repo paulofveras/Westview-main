@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Pagamento {
     PIX(1, "Pix"),
-    BOLETO(2, "Boleto");
+    BOLETO(2, "Boleto"),
+    CARTAO_CREDITO(3, "Cartão de Crédito"), // Novo
+    EXEMPLO_DEMO(4, "Exemplo (Demonstração)"); // Novo para o professor
 
     private int id;
     private String descricao;
@@ -30,5 +32,4 @@ public enum Pagamento {
         }
         throw new IllegalArgumentException("id pagamento inválido.");
     }
-
 }
