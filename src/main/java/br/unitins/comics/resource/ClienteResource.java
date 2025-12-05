@@ -38,7 +38,7 @@ public class ClienteResource {
     private static final Logger LOG = Logger.getLogger(EnderecoResource.class);
 
     @GET
-    @RolesAllowed({"Funcionario","Administrador"})
+    @RolesAllowed({"Funcionario","Administrador", "Cliente"})
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         LOG.infof("Executando o metodo findById. Id: %s", id.toString());

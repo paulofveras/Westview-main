@@ -159,7 +159,12 @@ public void update(Long id, ClienteDTO dto) {
 
     @Override
     public ClienteResponseDTO findById(Long id) {
-        return ClienteResponseDTO.valueOf(clienteRepository.findById(id));
+        Cliente cliente = clienteRepository.findById(id);
+        if (cliente == null) {
+            // Em vez de retornar null e causar erro depois, lançamos 404 agora
+            throw new NotFoundException("Cliente não encontrado.");
+        }
+        return ClienteResponseDTO.valueOf(cliente);
     }
 
     @Override

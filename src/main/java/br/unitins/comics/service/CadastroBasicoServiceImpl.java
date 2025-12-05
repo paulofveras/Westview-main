@@ -35,37 +35,34 @@ public class CadastroBasicoServiceImpl implements CadastroBasicoService {
     HashService hashService;
 
     @Override
-   @Transactional
+    @Transactional
     public CadastroBasicoResponseDTO create(@Valid CadastroBasicoDTO dto) {
         Usuario usuario = new Usuario();
-
         usuario.setUsername(dto.username());
         usuario.setSenha(hashService.getHashSenha(dto.senha()));
-
         usuarioRepository.persist(usuario);
 
         Telefone telefone = new Telefone();
         telefone.setCodigoArea(dto.telefone().codigoArea());
         telefone.setNumero(dto.telefone().numero());
-
         telefoneRepository.persist(telefone);
 
         Endereco endereco = new Endereco();
         endereco.setCep(dto.endereco().cep());
         endereco.setRua(dto.endereco().rua());
         endereco.setNumero(dto.endereco().numero());
-
         enderecoRepository.persist(endereco);
-
 
         Cliente cliente = new Cliente();
         cliente.setNome(dto.nome());
+        cliente.setCpf(dto.cpf()); // <--- LINHA NOVA IMPORTANTE!
         cliente.setEmail(dto.email());
         cliente.setEndereco(endereco);
         cliente.setTelefone(telefone);
         cliente.setUsuario(usuario);
 
         clienteRepository.persist(cliente);
+        
         return CadastroBasicoResponseDTO.valueOf(cliente);
     }
 
