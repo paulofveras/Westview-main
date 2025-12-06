@@ -59,3 +59,21 @@ INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornec
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 1);
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (3, 2);
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 3);
+
+-- 9. Pedidos de Exemplo
+-- Pedido 1: Cliente Visao (ID 2), Pago via PIX (ID 1), Total R$ 91.00
+INSERT INTO pedido (data, total, id_cliente, formapagamento, statuspagamento) 
+VALUES ('2024-12-01 14:30:00', 91.00, 2, 1, 1);
+
+-- Itens do Pedido 1 (2x Secret Wars)
+INSERT INTO itempedido (preco, quantidade, desconto, id_quadrinho, id_pedido) 
+VALUES (40.50, 2, 0.0, 1, 1);
+
+
+-- Pedido 2: Cliente Billy (ID 3), Não Pago via Boleto (ID 2), Total R$ 50.50
+INSERT INTO pedido (data, total, id_cliente, formapagamento, statuspagamento) 
+VALUES ('2024-12-05 09:15:00', 50.50, 3, 2, 2);
+
+-- Itens do Pedido 2 (1x X-men)
+INSERT INTO itempedido (preco, quantidade, desconto, id_quadrinho, id_pedido) 
+VALUES (50.50, 1, 0.0, 2, 2);

@@ -17,9 +17,12 @@ import br.unitins.comics.model.Pagamento;
 import br.unitins.comics.model.Pedido;
 import br.unitins.comics.model.Status;
 import br.unitins.comics.repository.QuadrinhoRepository;
+import br.unitins.comics.util.PageResult;
 import br.unitins.comics.repository.ClienteRepository;
 import br.unitins.comics.repository.PedidoRepository;
 import br.unitins.comics.validation.ValidationException;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -49,7 +52,10 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setData(LocalDateTime.now());
         pedido.setCliente(clienteRepository.findById(dto.idCliente()));
         pedido.setTotal(0d);
-        pedido.setFormaPagamento(Pagamento.valueOf(dto.idPagamento()));
+        
+        // Define a forma de pagamento
+        Pagamento formaPagamento = Pagamento.valueOf(dto.idPagamento());
+        pedido.setFormaPagamento(formaPagamento);
 
         List<ItemPedido> itens = new ArrayList<ItemPedido>();
 
@@ -79,13 +85,19 @@ public class PedidoServiceImpl implements PedidoService {
             } else {
                 throw new ValidationException("Pedido não finalizado", "Estoque insuficiente do produto: "+quadrinho.getNome());
             }
-           
-            
         }
-        pedido.setItens(itens);
-        pedido.setStatusPagamento(Status.NAO_PAGO);
-
         
+        pedido.setItens(itens);
+
+        // --- LÓGICA DE STATUS SOLICITADA ---
+        // Se for "Exemplo" (ID 4) -> Fica NÃO PAGO
+        // Se for Pix, Boleto ou Cartão -> Já nasce PAGO
+        if (formaPagamento.getId() == 4) {
+            pedido.setStatusPagamento(Status.NAO_PAGO);
+        } else {
+            pedido.setStatusPagamento(Status.PAGO);
+        }
+        // -----------------------------------
 
         pedidoRepository.persist(pedido);
         return PedidoResponseDTO.valueOf(pedido);
@@ -152,6 +164,23 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         return pedidos;
+    }
+
+    @Override
+    public PageResult<PedidoResponseDTO> findPaged(String q, int page, int pageSize, String sortStr) {
+        // Define a direção da ordenação baseada no parâmetro
+        Sort sort = "asc".equalsIgnoreCase(sortStr) ? Sort.by("data").ascending() : Sort.by("data").descending();
+
+        PanacheQuery<Pedido> query = pedidoRepository.findByKeyword(q, sort);
+        
+        long total = pedidoRepository.count();
+        long filtered = (q == null || q.isBlank()) ? total : query.count();
+
+        List<PedidoResponseDTO> list = query.page(page, pageSize).list().stream()
+            .map(PedidoResponseDTO::valueOf)
+            .collect(Collectors.toList());
+
+        return new PageResult<>(page, pageSize, total, filtered, list);
     }
 
 }

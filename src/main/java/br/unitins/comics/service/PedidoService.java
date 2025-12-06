@@ -15,4 +15,5 @@ public interface PedidoService {
     public void switchStatus(Long id);
     boolean clienteAutenticado(String username, Long idCliente);
     public List<PedidoResponseDTO> meusPedidos();
+    public br.unitins.comics.util.PageResult<br.unitins.comics.dto.PedidoResponseDTO> findPaged(String q, int page, int pageSize, String sortStr);
 }

@@ -4,10 +4,12 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
 import br.unitins.comics.dto.PedidoDTO;
+import br.unitins.comics.dto.PedidoResponseDTO;
 import br.unitins.comics.model.Cliente;
 import br.unitins.comics.repository.ClienteRepository;
 import br.unitins.comics.service.ClienteService;
 import br.unitins.comics.service.PedidoService;
+import br.unitins.comics.util.PageResult;
 import br.unitins.comics.validation.ValidationException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -22,6 +24,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.PathParam;
+import br.unitins.comics.util.PageResult;
+import br.unitins.comics.dto.PedidoResponseDTO;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.QueryParam;
     
 @Path("/pedidos")
 @Produces(MediaType.APPLICATION_JSON)
@@ -59,11 +65,16 @@ public class PedidoResource {
     }
 
     @GET
-    
     @RolesAllowed("Funcionario")
-    public Response findAll(){
-        LOG.info("Executando o findAll");
-        return Response.ok(service.findAll()).build();
+    public Response findPaged(
+        @QueryParam("q") String q,
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("10") int pageSize,
+        @QueryParam("sort") @DefaultValue("desc") String sort // Novo parametro
+    ) {
+        LOG.infof("Listando pedidos. Filtro: %s, Ordem: %s", q, sort);
+        PageResult<PedidoResponseDTO> result = service.findPaged(q, page, pageSize, sort);
+        return Response.ok(result).build();
     }
 
     @GET
