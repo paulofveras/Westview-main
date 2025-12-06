@@ -55,6 +55,39 @@ INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornec
 INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) VALUES ('X-men','Marvel Comics',50.50,360,2,4,10,'x-men.jpg');
 INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) VALUES ('Get Up','NewJeans Bunny Beach Bag',150.00,84,4,5,50,'get-up.jpg');
 
+-- 7. Quadrinhos (Foco: Marvel & Protagonistas Femininas)
+-- IDs 1, 2 e 3 são mantidos na ordem para não quebrar os favoritos/pedidos já existentes
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Capitã Marvel: Mais Alto...','Carol Danvers assume o manto e voa mais alto do que nunca.', 59.90, 136, 1, 4, 15, 'captain-marvel.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Viúva Negra: O Fio da Teia','Natasha Romanoff confronta seu passado sombrio na Sala Vermelha.', 45.50, 112, 2, 4, 20, 'black-widow.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Ms. Marvel: Nada Normal','A origem de Kamala Khan, a nova protetora de Jersey City.', 39.90, 120, 2, 4, 50, 'ms-marvel.jpg');
+
+-- Novos Títulos Adicionais (Fornecedor 4 = Panini/Marvel)
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Feiticeira Escarlate: O Caminho das Bruxas','Wanda Maximoff viaja o mundo resolvendo crimes mágicos.', 72.00, 180, 1, 4, 10, 'scarlet-witch.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Poderosa Thor: A Deusa do Trovão','Jane Foster se torna digna e empunha o Mjolnir.', 65.00, 160, 1, 4, 12, 'jane-foster-thor.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Mulher-Hulk: A Advogada','Jennifer Walters equilibra a vida no tribunal e nos Vingadores.', 52.90, 144, 2, 4, 25, 'she-hulk.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Spider-Gwen: Ghost-Spider','Gwen Stacy de outra dimensão combate o crime com estilo.', 42.00, 100, 2, 4, 30, 'spider-gwen.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Fênix Negra','A saga clássica e trágica de Jean Grey e o poder cósmico.', 89.90, 220, 1, 4, 8, 'dark-phoenix.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('Shuri: Em Busca de Wakanda','A princesa de Wakanda e gênio tecnológico em sua própria aventura.', 35.90, 128, 2, 4, 40, 'shuri.jpg');
+
+INSERT INTO quadrinho (nome, descricao, preco, quantPaginas, material, id_fornecedor, estoque, nomeImagem) 
+VALUES ('X-23: Inocência Perdida','A história de origem de Laura Kinney, o clone do Wolverine.', 48.00, 150, 2, 4, 18, 'x23.jpg');
+
 -- 8. Favoritos
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (2, 1);
 INSERT INTO cliente_favoritos_quadrinho (id_cliente, id_quadrinho) VALUES (3, 2);
