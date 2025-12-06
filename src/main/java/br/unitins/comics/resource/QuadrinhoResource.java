@@ -33,7 +33,7 @@ public class QuadrinhoResource {
     private static final Logger LOG = Logger.getLogger(EnderecoResource.class);
 
     @GET
-    @RolesAllowed("Funcionario")
+    //@RolesAllowed("Funcionario")
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         LOG.infof("Executando o metodo findById. Id: %s", id.toString());

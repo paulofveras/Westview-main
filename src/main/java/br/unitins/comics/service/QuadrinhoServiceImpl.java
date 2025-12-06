@@ -1,9 +1,11 @@
 package br.unitins.comics.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.unitins.comics.dto.QuadrinhoDTO;
 import br.unitins.comics.dto.QuadrinhoResponseDTO;
+import br.unitins.comics.model.Cliente;
 import br.unitins.comics.model.Material;
 import br.unitins.comics.model.Quadrinho;
 import br.unitins.comics.repository.FornecedorRepository;
@@ -63,7 +65,25 @@ public class QuadrinhoServiceImpl implements QuadrinhoService {
     @Override
     @Transactional
     public void delete(Long id) {
-        quadrinhoRepository.deleteById(id);
+        // 1. Busca o quadrinho
+        Quadrinho quadrinho = quadrinhoRepository.findById(id);
+        if (quadrinho == null) return;
+
+        // 2. Limpeza de Favoritos (Resolve o erro do Console)
+        // Cria uma cópia da lista para evitar erro de concorrência ao remover
+        List<Cliente> fans = new ArrayList<>(quadrinho.getFavoritadosPor()); 
+        for (Cliente fan : fans) {
+            fan.getFavoritos().remove(quadrinho);
+            // O Hibernate gerencia a atualização da tabela de join automaticamente aqui
+        }
+
+        // 3. Tenta deletar (Proteção contra Pedidos existentes)
+        try {
+            quadrinhoRepository.delete(quadrinho);
+        } catch (Exception e) {
+            // Se o quadrinho estiver num Pedido (ItemPedido), vai cair aqui
+            throw new ValidationException("id", "Não é possível excluir. Este quadrinho já possui vendas registradas.");
+        }
     }
 
     @Override
