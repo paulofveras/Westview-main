@@ -1,5 +1,6 @@
 package br.unitins.comics.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import br.unitins.comics.model.Status;
 
 public record PedidoResponseDTO(
     Long id,
+    LocalDateTime data, // <--- CAMPO NOVO
     ClienteResponseDTO cliente,
     Double total,
     List<ItemPedidoResponseDTO> itens,
@@ -23,15 +25,12 @@ public record PedidoResponseDTO(
                                             .toList();
         return new PedidoResponseDTO(
             pedido.getId(), 
+            pedido.getData(), // <--- ENVIANDO A DATA AGORA
             ClienteResponseDTO.valueOf(pedido.getCliente()),
             pedido.getTotal(),
             lista,
             pedido.getFormaPagamento(),
-
-            // implementar logica de geracao de chave de pagamento
             String.valueOf(UUID.randomUUID()),
-            
             pedido.getStatusPagamento());
     }
-
 }

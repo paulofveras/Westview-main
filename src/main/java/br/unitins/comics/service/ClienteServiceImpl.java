@@ -151,10 +151,15 @@ public void update(Long id, ClienteDTO dto) {
     }
 
 
-    @Override
+@Override
     @Transactional
     public void delete(Long id) {
-        clienteRepository.deleteById(id);
+        try {
+            clienteRepository.deleteById(id);
+        } catch (Exception e) {
+            // Captura o erro de chave estrangeira (ConstraintViolation)
+            throw new ValidationException("id", "Não é possível excluir este cliente pois ele possui pedidos ou outros registros vinculados.");
+        }
     }
 
     @Override
